@@ -5,4 +5,9 @@ public class BoletoPayment implements PaymentMethod {
     public void pay(double amount) {
         System.out.println("Pagamento efetuado com sucesso via boleto");
     }
+
+    @Override
+    public String getDescription() {
+        return "BOLETO";
+    }
 }

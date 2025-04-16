@@ -53,6 +53,38 @@ public class ProductRepository implements EntityRepository<Product> {
 
     }
 
+    public List<Product> findByIds(List<UUID> ids) {
+
+        if(ids.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        int quantidadeIds = ids.size();
+        String complementa = String.join(",", Collections.nCopies(quantidadeIds, "?"));
+        String query = "SELECT * FROM products WHERE uuid in (" + complementa + ")";
+        List<Product> produtos = new ArrayList<>();
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            for(int i = 0; i < quantidadeIds; i++){
+                stmt.setString(i + 1 , ids.get(i).toString());
+            }
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                Product product = new Product(
+                        UUID.fromString(resultSet.getString("uuid")),
+                        resultSet.getString("name"),
+                        resultSet.getDouble("price")
+                );
+                produtos.add(product);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return produtos;
+
+    }
+
     @Override
     public List<Product> findAll() {
         String query = "SELECT * FROM products";
