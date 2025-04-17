@@ -1,8 +1,9 @@
 package com.unicesumar.model.entities;
 
-import com.unicesumar.service.paymentMethods.PaymentMethod;
+
 import com.unicesumar.service.paymentMethods.PaymentType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -10,15 +11,23 @@ import java.util.stream.Collectors;
 public class Sale extends Entity{
     private User user;
     private List<Product> products;
-    private PaymentMethod formaPagamento;
+    private PaymentType formaPagamento;
     private double  valorTotal;
+    private LocalDateTime saleDate;
 
-    public Sale(UUID uuid, User user, List<Product> products, PaymentMethod formaPagamento) {
+    public Sale(UUID uuid, User user, List<Product> products, PaymentType formaPagamento) {
         super(uuid);
         this.user = user;
         this.products = products;
         this.formaPagamento = formaPagamento;
         this.valorTotal = products.stream().mapToDouble(Product::getPrice).sum();
+    }
+    public Sale( User user, List<Product> products, PaymentType formaPagamento) {
+        this.user = user;
+        this.products = products;
+        this.formaPagamento = formaPagamento;
+        this.valorTotal = products.stream().mapToDouble(Product::getPrice).sum();
+        this.saleDate = LocalDateTime.now();
     }
 
     public User getUser() {
@@ -37,11 +46,11 @@ public class Sale extends Entity{
         this.products = products;
     }
 
-    public PaymentMethod getFormaPagamento() {
+    public PaymentType getFormaPagamento() {
         return formaPagamento;
     }
 
-    public void setFormaPagamento(PaymentMethod formaPagamento) {
+    public void setFormaPagamento(PaymentType formaPagamento) {
         this.formaPagamento = formaPagamento;
     }
 

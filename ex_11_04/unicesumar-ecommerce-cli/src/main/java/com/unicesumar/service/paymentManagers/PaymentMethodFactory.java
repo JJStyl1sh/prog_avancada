@@ -1,10 +1,6 @@
 package com.unicesumar.service.paymentManagers;
 
-import com.unicesumar.service.paymentMethods.BoletoPayment;
-import com.unicesumar.service.paymentMethods.CreditCardPayment;
-import com.unicesumar.service.paymentMethods.PaymentMethod;
-import com.unicesumar.service.paymentMethods.PaymentType;
-import com.unicesumar.service.paymentMethods.PixPayment;
+import com.unicesumar.service.paymentMethods.*;
 
 public class PaymentMethodFactory {
     public static PaymentMethod create(PaymentType type) {

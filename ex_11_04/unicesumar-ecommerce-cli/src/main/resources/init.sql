@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS sales (
     user_id UUID NOT NULL,
     payment_method TEXT NOT NULL,
     sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_price NUMERIC(10,4) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(uuid)
 );
 

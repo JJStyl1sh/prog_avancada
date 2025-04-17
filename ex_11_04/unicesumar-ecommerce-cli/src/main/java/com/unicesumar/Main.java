@@ -1,12 +1,19 @@
 package com.unicesumar;
 
 import com.unicesumar.controller.ProductController;
+import com.unicesumar.controller.SaleController;
 import com.unicesumar.controller.UserController;
 
 import com.unicesumar.model.repositories.ProductRepository;
+import com.unicesumar.model.repositories.SaleRepository;
 import com.unicesumar.model.repositories.UserRepository;
 import com.unicesumar.view.View;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,18 +24,22 @@ public class Main {
     public static void main(String[] args) {
         ProductRepository listaDeProdutos = null;
         UserRepository listaDeUsuarios = null;
+        SaleRepository listaDeVendas = null;
 
         Connection conn = null;
-        
-        // Parâmetros de conexão
+
+// No Main.java, altere a URL:
         String url = "jdbc:sqlite:database.sqlite";
 
         // Tentativa de conexão
         try {
             conn = DriverManager.getConnection(url);
+            executarScriptSQL(conn, "init.sql");
+
             if (conn != null) {
                 listaDeProdutos = new ProductRepository(conn);
                 listaDeUsuarios = new UserRepository(conn);
+                listaDeVendas = new SaleRepository(conn);
             } else {
                 System.out.println("Falha na conexão.");
                 System.exit(1);
@@ -41,6 +52,7 @@ public class Main {
         View view = new View();
         UserController userController = new UserController(listaDeUsuarios, view);
         ProductController productController = new ProductController(listaDeProdutos, view);
+        SaleController saleController = new SaleController(listaDeUsuarios, listaDeProdutos, listaDeVendas, view);
 
         Scanner scanner = new Scanner(System.in);
         int option;
@@ -65,6 +77,10 @@ public class Main {
                     userController.listarUsuarios();
                     break;
                 case 5:
+                    System.out.println("Cadastrando Venda");
+                    saleController.carregarVenda();
+                    break;
+                case 6:
                     System.out.println("Saindo...");
                     break;
                 default:
@@ -79,6 +95,34 @@ public class Main {
             conn.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    private static void executarScriptSQL(Connection conn, String nomeArquivo) {
+        try (InputStream input = Main.class.getResourceAsStream("/" + nomeArquivo)) {
+            if (input == null) {
+                throw new RuntimeException("Arquivo não encontrado: init.sql");
+            }
+
+            // Leitura compatível com Java 8
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(input, StandardCharsets.UTF_8)
+            );
+
+            StringBuilder sql = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sql.append(line).append("\n");
+            }
+
+            // Executa cada comando separadamente
+            for (String statement : sql.toString().split(";")) {
+                if (!statement.trim().isEmpty()) {
+                    conn.createStatement().execute(statement);
+                }
+            }
+
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException("Erro no init.sql: " + e.getMessage());
         }
     }
 }

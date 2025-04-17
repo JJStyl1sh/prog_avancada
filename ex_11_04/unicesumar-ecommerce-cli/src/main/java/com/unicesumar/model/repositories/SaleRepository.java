@@ -6,6 +6,7 @@ import com.unicesumar.model.entities.Sale;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,21 +17,22 @@ public class SaleRepository implements EntityRepository<Sale> {
     public SaleRepository(Connection connection){this.connection = connection;}
     @Override
     public void save(Sale entity) {
-        String query = "INSERT INTO sales VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO sales VALUES (?, ?, ?, ?, ?)";
         String querySaleProducts = "INSERT INTO sale_products VALUES (?, ?)";
         try {
             try (PreparedStatement saleStmt = connection.prepareStatement(query)) {
                 saleStmt.setString(1, entity.getUuid().toString());
                 saleStmt.setString(2, entity.getUser().getUuid().toString());
-                saleStmt.setString(3, entity.getFormaPagamento().getDescription());
-                saleStmt.setDouble(4, entity.getValorTotal());
+                saleStmt.setString(3, entity.getFormaPagamento().name());
+                saleStmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                saleStmt.setDouble(5, entity.getValorTotal());
                 saleStmt.executeUpdate();
             }
             try (PreparedStatement saleProductsStmt = connection.prepareStatement(querySaleProducts)) {
                 for (Product product : entity.getProducts()) {
                     saleProductsStmt.setString(1, entity.getUuid().toString());
                     saleProductsStmt.setString(2, product.getUuid().toString());
-                    saleProductsStmt.addBatch(); // Otimização para múltiplas inserções
+                    saleProductsStmt.addBatch();
                 }
                 saleProductsStmt.executeBatch();
             }
