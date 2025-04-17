@@ -67,7 +67,7 @@ public class Sale extends Entity{
         String produtosFormatados = this.products.stream().map(p -> "- " + p.getName()).collect(Collectors.joining("\n"));
         return "Resumo da venda: " +
                 "\nCliente: " + this.user.getName() +
-                "\nProdutos: " + produtosFormatados +
+                "\nProdutos: \n" + produtosFormatados +
                 "\nValor total: " + this.valorTotal +
                 "\nPagamento: " + this.formaPagamento.getDescription();
     }

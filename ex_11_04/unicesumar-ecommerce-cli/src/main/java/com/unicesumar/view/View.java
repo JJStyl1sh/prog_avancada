@@ -42,6 +42,7 @@ public class View {
     }
 
     public String getEmail(){
+        scanner.nextLine();
         System.out.println("Digite o email do usuario: ");
         return scanner.nextLine();
     }
