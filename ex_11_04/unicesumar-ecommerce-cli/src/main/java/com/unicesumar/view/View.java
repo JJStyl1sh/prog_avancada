@@ -42,7 +42,6 @@ public class View {
     }
 
     public String getEmail(){
-        scanner.nextLine();
         System.out.println("Digite o email do usuario: ");
         return scanner.nextLine();
     }
@@ -61,5 +60,18 @@ public class View {
             showMensagem("Forma de pagamento inválida.");
             return null;
         }
+    }
+    public List<Integer> getNumerosProdutos(List<Product> produtos) {
+        System.out.println("\n--- Produtos Disponíveis ---");
+        for (int i = 0; i < produtos.size(); i++) {
+            System.out.println((i + 1) + " - " + produtos.get(i).getName());
+        }
+
+        System.out.println("Digite os números dos produtos separados por virgula (ex: 1,3): ");
+        String input = scanner.nextLine();
+        return Arrays.stream(input.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
     }
 }

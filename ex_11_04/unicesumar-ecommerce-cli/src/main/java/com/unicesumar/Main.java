@@ -88,7 +88,7 @@ public class Main {
 
             }
 
-        } while (option != 5);
+        } while (option != 6);
 
         scanner.close();
         try {
@@ -103,7 +103,6 @@ public class Main {
                 throw new RuntimeException("Arquivo não encontrado: init.sql");
             }
 
-            // Leitura compatível com Java 8
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(input, StandardCharsets.UTF_8)
             );
@@ -114,7 +113,6 @@ public class Main {
                 sql.append(line).append("\n");
             }
 
-            // Executa cada comando separadamente
             for (String statement : sql.toString().split(";")) {
                 if (!statement.trim().isEmpty()) {
                     conn.createStatement().execute(statement);
